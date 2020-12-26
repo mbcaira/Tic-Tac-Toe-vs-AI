@@ -2,6 +2,7 @@
 import random
 
 game_board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
+remaining_spots = 8
 
 
 def show_board():
@@ -14,7 +15,7 @@ def show_board():
     print("---------")
 
 
-def check_win(player_mark):
+def game_over(player_mark):
     win_conditions = {
         1: [game_board[0][0], game_board[0][1], game_board[0][2]],  # Row 1
         2: [game_board[1][0], game_board[1][1], game_board[1][2]],  # Row 2
@@ -27,12 +28,16 @@ def check_win(player_mark):
     }
     for cond in win_conditions.values():
         if cond[0] == player_mark and cond[1] == player_mark and cond[2] == player_mark:
+            show_board()
             print(f"{player_mark} wins")
-            return True
-    return False
+            exit(0)
+    if remaining_spots == 0:
+        print("Draw")
+        exit(0)
 
 
 def place_mark(player_mark, mark_coords):
+    global remaining_spots
     valid_coords = ["1", "2", "3"]
     try:
         row = int(mark_coords[0]) - 1
@@ -48,48 +53,75 @@ def place_mark(player_mark, mark_coords):
         print("This cell is occupied! Choose another one!")
         return False
     game_board[row][col] = player_mark
+    remaining_spots -= 1
     return True
 
 
-def ai_move(player_mark):
+def user_move(player_mark):
+    coords = input("Enter the coordinates: ").split()
+    while not place_mark(player_mark, coords):
+        coords = input("Enter the coordinates: ").split()
+
+
+def ai_easy_move(player_mark):
     print('Making move level "easy"')
     while True:
-        row, col = random.randrange(0, 3, 1), random.randrange(0, 3, 1)
-        if game_board[row][col] == " ":
-            game_board[row][col] = player_mark
+        coords = [random.randrange(0, 3, 1), random.randrange(0, 3, 1)]
+        if game_board[coords[0]][coords[1]] == " ":
+            place_mark(player_mark, coords)
             return
 
 
-if __name__ == '__main__':
-    mark = "X"
-    remaining_spots = 8
-    show_board()
+def ai_medium_move(player_mark):
+    pass
 
+
+def ai_hard_move(player_mark):
+    pass
+
+
+def start_game(params):
+    mark = "X"
     next_mark = {
         "X": "O",
         "O": "X"
     }
 
+    move_sets = {
+        "user": user_move,
+        "easy": ai_easy_move,
+        "medium": ai_medium_move,
+        "hard": ai_hard_move
+    }
+    next_turn = {
+        1: 2,
+        2: 1
+    }
+    turn = 1
     while True:
-        coords = input("Enter the coordinates: ").split()
-        valid = place_mark(mark, coords)
-        while not valid:
-            coords = input("Enter the coordinates: ").split()
-            valid = place_mark(mark, coords)
-        remaining_spots -= 1
         show_board()
-        if remaining_spots == 0:
-            print("Draw")
-            break
-        if check_win(mark):
-            break
+        move_sets[params[turn]](mark)
+        game_over(mark)
         mark = next_mark[mark]
-        ai_move(mark)
-        remaining_spots -= 1
-        show_board()
-        if check_win(mark):
-            break
-        if remaining_spots == 0:
-            print("Draw")
-            break
-        mark = next_mark[mark]
+        turn = next_turn[turn]
+
+
+def check_parameters(params):
+    valid_parameters = ["easy", "medium", "hard", "user"]
+    if params[0] != 'start':
+        return False
+    for param in params[1:]:
+        if param not in valid_parameters:
+            return False
+    return True
+
+
+if __name__ == '__main__':
+    while True:
+        parameters = input("Input command: ").split()
+        if "exit" in parameters:
+            exit(0)
+        if check_parameters(parameters):
+            start_game(parameters)
+        else:
+            print("Bad parameters")
