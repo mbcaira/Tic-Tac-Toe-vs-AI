@@ -2,7 +2,7 @@
 import random
 
 game_board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
-remaining_spots = 8
+remaining_spots = 9
 
 
 def show_board():
@@ -16,6 +16,7 @@ def show_board():
 
 
 def game_over(player_mark):
+    global game_board
     win_conditions = {
         1: [game_board[0][0], game_board[0][1], game_board[0][2]],  # Row 1
         2: [game_board[1][0], game_board[1][1], game_board[1][2]],  # Row 2
@@ -30,10 +31,12 @@ def game_over(player_mark):
         if cond[0] == player_mark and cond[1] == player_mark and cond[2] == player_mark:
             show_board()
             print(f"{player_mark} wins")
-            exit(0)
+            game_board = [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]]
+            return True
     if remaining_spots == 0:
         print("Draw")
-        exit(0)
+        return True
+    return False
 
 
 def place_mark(player_mark, mark_coords):
@@ -66,8 +69,9 @@ def user_move(player_mark):
 def ai_easy_move(player_mark):
     print('Making move level "easy"')
     while True:
-        coords = [random.randrange(0, 3, 1), random.randrange(0, 3, 1)]
+        coords = [random.randint(0, 2), random.randint(0, 2)]
         if game_board[coords[0]][coords[1]] == " ":
+            coords = [str(coords[0]+1), str(coords[1]+1)]
             place_mark(player_mark, coords)
             return
 
@@ -101,7 +105,8 @@ def start_game(params):
     while True:
         show_board()
         move_sets[params[turn]](mark)
-        game_over(mark)
+        if game_over(mark):
+            return
         mark = next_mark[mark]
         turn = next_turn[turn]
 
