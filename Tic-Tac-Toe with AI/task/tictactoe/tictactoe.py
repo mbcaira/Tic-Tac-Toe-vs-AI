@@ -96,12 +96,12 @@ def ai_medium_move(player_mark):
         prevent = cond[1].count(next_mark[player_mark])
         if advance == 2 and cond[1].count(" ") == 1:
             index = cond[1].index(" ")
-            coords = [str(coord+1) for coord in win_coords[cond[0]][index]]
+            coords = [str(coord + 1) for coord in win_coords[cond[0]][index]]
             place_mark(player_mark, coords)
             return
         elif prevent == 2 and cond[1].count(" ") == 1:
             index = cond[1].index(" ")
-            coords = [str(coord+1) for coord in win_coords[cond[0]][index]]
+            coords = [str(coord + 1) for coord in win_coords[cond[0]][index]]
             place_mark(player_mark, coords)
             return
     random_move(player_mark)
