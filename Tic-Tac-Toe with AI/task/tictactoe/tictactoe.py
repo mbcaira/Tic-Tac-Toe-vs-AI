@@ -1,4 +1,3 @@
-# write your code here
 import random
 
 
@@ -48,7 +47,7 @@ class TicTacToe:
         for cond in win_conditions.values():
             if cond[0] == player_mark and cond[1] == player_mark and cond[2] == player_mark:
                 self.remaining_spots = 9
-                return 1
+                return player_mark
         if self.remaining_spots == 0:
             self.remaining_spots = 9
             return 0
@@ -101,9 +100,6 @@ class TicTacToe:
         self.random_move(player_mark)
         return
 
-    def ai_hard_move(self, player_mark):
-        pass
-
     def random_move(self, player_mark):
         while True:
             coords = [random.randint(0, 2), random.randint(0, 2)]
@@ -129,9 +125,9 @@ class TicTacToe:
             self.show_board()
             move_sets[params[turn]](mark)
             state = self.game_over(mark)
-            if state == 1 or state == 0:
+            if state != -1:
                 self.show_board()
-                if state == 1:
+                if state == mark:
                     print(f"{mark} wins")
                 else:
                     print("Draw")
@@ -141,12 +137,14 @@ class TicTacToe:
             turn = next_turn[turn]
 
     def check_parameters(self, params):
-        valid_parameters = ["easy", "medium", "hard", "user"]
+        valid_parameters = ["easy", "medium", "hard", "user", "start", "exit"]
         if params[0] != 'start':
-            return False
-        if "exit" in params:
-            exit(0)
-        for param in params[1:]:
+            if "exit" in params:
+                exit(0)
+            else:
+                print("Bad parameters")
+                return False
+        for param in params:
             if param not in valid_parameters:
                 print("Bad parameters")
                 return False
